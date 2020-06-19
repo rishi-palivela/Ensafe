@@ -164,6 +164,12 @@ extension ViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
         self.searchBar.endEditing(true)
     }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKPolylineRenderer(polyline: overlay as! MKPolyline)
+        renderer.strokeColor = UIColor.blue
+        return renderer
+    }
 }
 
 extension ViewController: UISearchBarDelegate {
@@ -189,18 +195,26 @@ extension ViewController: UISearchBarDelegate {
                 return
             }
             
-            let item = response.mapItems[0]
-            let region = MKCoordinateRegion(center: item.placemark.coordinate,
-                                            latitudinalMeters: 500,
-                                            longitudinalMeters: 500)
+            print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) . \(response.mapItems.count)")
+            let destination = response.mapItems[0]
             
-            DispatchQueue.main.async {
-                self.mapView.setRegion(region, animated: true)
+            let directionsRequest = MKDirections.Request()
+            directionsRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapView.userLocation.coordinate))
+            directionsRequest.destination = destination
+            directionsRequest.requestsAlternateRoutes = true
+            
+            directionsRequest.transportType = .automobile
+            
+            let directions = MKDirections(request: directionsRequest)
+            directions.calculate { [unowned self] response, error in
+                guard let unwrappedResponse = response else { return }
+
+                for route in unwrappedResponse.routes {
+                    self.mapView.addOverlay(route.polyline)
+                    self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
+                }
             }
         }
-        
-//        TODO: show the first search result on screen
-        
     }
     
 }

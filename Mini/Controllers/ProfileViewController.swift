@@ -46,6 +46,26 @@ class ProfileViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let cell = tableView.cellForRow(at: indexPath)
+        switch  cell?.textLabel?.text ?? "" {
+        case "Settings":
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            
+        case "Sign Out":
+            let alertController = UIAlertController(title: "Are you sure?",
+                                                    message: "Do you want to sign out?",
+                                                    preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Confirm", style: .destructive){ _ in
+                try? self.authUI.signOut()
+            })
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            
+            self.present(alertController, animated: true)
+            
+        default:
+            break
+        }
     }
     
     @objc func addAuthObserver() {
