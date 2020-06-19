@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5BDB96D0249D4EE0003F5D0F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDB96CF249D4EE0003F5D0F /* User.swift */; };
 		5BDE849724990ECE00220776 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDE849624990ECE00220776 /* AppDelegate.swift */; };
 		5BDE849924990ECE00220776 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDE849824990ECE00220776 /* SceneDelegate.swift */; };
 		5BDE849B24990ECE00220776 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDE849A24990ECE00220776 /* ViewController.swift */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		1EFE5B523A56536FFC5A2F82 /* Pods_Mini.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Mini.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5BDB96CF249D4EE0003F5D0F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		5BDE849324990ECE00220776 /* Ensafe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ensafe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BDE849624990ECE00220776 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5BDE849824990ECE00220776 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +68,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		5BDB96CE249D4EBD003F5D0F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5BDB96CF249D4EE0003F5D0F /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		5BDE848A24990ECE00220776 = {
 			isa = PBXGroup;
 			children = (
@@ -90,6 +100,7 @@
 				5BDE849624990ECE00220776 /* AppDelegate.swift */,
 				5BDE849824990ECE00220776 /* SceneDelegate.swift */,
 				724EF16D249B441800F85217 /* Custom Views */,
+				5BDB96CE249D4EBD003F5D0F /* Models */,
 				724EF16B249B43D900F85217 /* Controllers */,
 				724EF16C249B43E800F85217 /* Storyboards */,
 				724EF16A249B434000F85217 /* Supporting Files */,
@@ -283,6 +294,7 @@
 				5BDE849724990ECE00220776 /* AppDelegate.swift in Sources */,
 				5BDE84AB249943B600220776 /* ProfileViewController.swift in Sources */,
 				5BDE849924990ECE00220776 /* SceneDelegate.swift in Sources */,
+				5BDB96D0249D4EE0003F5D0F /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
