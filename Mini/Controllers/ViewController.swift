@@ -166,8 +166,9 @@ extension ViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        let renderer = MKPolylineRenderer(polyline: overlay as! MKPolyline)
-        renderer.strokeColor = UIColor.blue
+        let polyline = overlay as! MKPolyline
+        let renderer = MKPolylineRenderer(polyline: polyline)
+        renderer.strokeColor = Route.preferenceColors[Route.Preference(rawValue: polyline.subtitle ?? Route.Preference.last.rawValue)!]
         return renderer
     }
 }
@@ -202,15 +203,30 @@ extension ViewController: UISearchBarDelegate {
             directionsRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapView.userLocation.coordinate))
             directionsRequest.destination = destination
             directionsRequest.requestsAlternateRoutes = true
-            
             directionsRequest.transportType = .automobile
+            
+            self.mapView.removeOverlays(self.mapView.overlays)
             
             let directions = MKDirections(request: directionsRequest)
             directions.calculate { [unowned self] response, error in
-                guard let unwrappedResponse = response else { return }
+                guard let routes = response?.routes else { return }
 
-                for route in unwrappedResponse.routes {
-                    self.mapView.addOverlay(route.polyline)
+                for i in stride(from: routes.count-1, to: -1, by: -1) {
+                    let route = routes[i]
+                    let polyline = route.polyline
+                    polyline.subtitle = ((i == 0) ? Route.Preference.first :
+                        (i == 1) ? Route.Preference.second : Route.Preference.last).rawValue
+                    
+                    if i == 0 {
+                        let formatter = DateComponentsFormatter()
+                        formatter.allowedUnits = [.day, .hour, .minute, .second]
+                        formatter.unitsStyle = .short
+                        let str = formatter.string(from: route.expectedTravelTime)!
+                        print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) >\(str)")
+                    }
+                    
+                        
+                    self.mapView.addOverlay(polyline)
                     self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
                 }
             }
