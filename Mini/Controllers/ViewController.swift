@@ -30,8 +30,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        startLocation()
+        
         mapView.delegate = self
         mapView.showsCompass = false
+        zoomToUserLocationTapped(self)
         
         searchBar.textField?.backgroundColor = .searchBarBackground
         zoomToUserLocationButton.backgroundColor = .mapButtonBackground
@@ -51,9 +54,6 @@ class ViewController: UIViewController {
     /// Called after view appears on screen
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        startLocation()
-        zoomToUserLocationTapped(self)
     }
     
     /// Called after view is removed from screen

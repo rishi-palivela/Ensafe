@@ -49,6 +49,9 @@ class ProfileViewController: UITableViewController {
         
         let cell = tableView.cellForRow(at: indexPath)
         switch  cell?.textLabel?.text ?? "" {
+        case "Show My Info":
+            performSegue(withIdentifier: "Show Details", sender: self)
+        
         case "Settings":
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             
