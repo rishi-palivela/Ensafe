@@ -13,9 +13,13 @@ import FirebaseUI
 
 class ViewController: UIViewController {
     
+    enum CardState {
+        case expanded
+        case collapsed
+    }
+    
     var locationManager: CLLocationManager?
     
-    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var zoomToUserLocationButton: UIButton!
     @IBOutlet weak var shareLocationButton: UIButton!
@@ -26,9 +30,25 @@ class ViewController: UIViewController {
     var authUI: FUIAuth!
     var authStateHandle: AuthStateDidChangeListenerHandle?
     
+    var cardViewController: CardViewController!
+    var visualEffectView: UIVisualEffectView!
+    var cardHeight: CGFloat {
+        view.frame.height * 0.9
+    }
+    let cardHandleAreaHeight: CGFloat = 180
+    var cardVisible = false
+    var nextState: CardState {
+        cardVisible ? .collapsed : .expanded
+    }
+    
+    var runningAnimations = [UIViewPropertyAnimator]()
+    var animationProgressWhenInterrupted: CGFloat = 0
+    
     /// Called after view is loaded into memory
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupCard()
         
         startLocation()
         
@@ -36,11 +56,8 @@ class ViewController: UIViewController {
         mapView.showsCompass = false
         zoomToUserLocationTapped(self)
         
-        searchBar.textField?.backgroundColor = .searchBarBackground
         zoomToUserLocationButton.backgroundColor = .mapButtonBackground
         alignNorthButton.backgroundColor = .mapButtonBackground
-        
-        searchBar.delegate = self
         
         authUI = (UIApplication.shared.delegate as! AppDelegate).authUI
         addAuthObserver()
@@ -149,6 +166,149 @@ class ViewController: UIViewController {
     
 }
 
+extension ViewController {
+    
+    func setupCard() {
+        visualEffectView = UIVisualEffectView()
+        visualEffectView.frame = self.view.frame
+        self.view.addSubview(visualEffectView)
+        
+        cardViewController = CardViewController(nibName: "CardViewController", bundle: nil)
+        cardViewController.delegate = self
+        addChild(cardViewController)
+        view.addSubview(cardViewController.view)
+        
+        cardViewController.view.frame = CGRect(x: 0, y: view.frame.height - cardHandleAreaHeight,
+                                               width: view.bounds.width, height: cardHeight)
+        
+        cardViewController.view.clipsToBounds = true
+        
+        cardViewController.handleArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleCardTap(recognzier:))))
+        cardViewController.handleArea.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handleCardPan(recognzier:))))
+    }
+    
+    @objc func handleCardTap(recognzier: UITapGestureRecognizer) {
+        if(cardVisible) {
+            cardViewController.prepareToCollapse()
+        }
+        
+        switch recognzier.state {
+        case .ended:
+            animateTransitionIfNeeded(state: nextState, duration: 0.9)
+        default:
+            break
+        }
+    }
+    
+    @objc func handleCardPan(recognzier: UIPanGestureRecognizer) {
+        if(cardVisible) {
+            cardViewController.prepareToCollapse()
+        }
+        
+        switch recognzier.state {
+        case .began:
+            startInteractiveTransition(state: nextState, duration: 0.9)
+            
+        case .changed:
+            let translation = recognzier.translation(in: self.cardViewController.handleArea)
+            var fractionComplete = translation.y / cardHeight
+            fractionComplete = cardVisible ? fractionComplete : -fractionComplete
+            updateInteractiveTransition(fractionCompleted: fractionComplete)
+            
+        case .ended:
+            continueInteractiveTransition()
+            
+        default:
+            break
+        }
+    }
+    
+    func animateTransitionIfNeeded(state: CardState, duration: TimeInterval) {
+        if runningAnimations.isEmpty {
+            let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
+                switch state {
+                case .expanded:
+                    self.cardViewController.view.frame.origin.y = self.view.frame.height - self.cardHeight
+                case .collapsed:
+                    self.cardViewController.view.frame.origin.y = self.view.frame.height - self.cardHandleAreaHeight
+                }
+            }
+            
+            frameAnimator.addCompletion { _ in
+                self.cardVisible.toggle()
+                self.runningAnimations.removeAll()
+            }
+            
+            frameAnimator.startAnimation()
+            runningAnimations.append(frameAnimator)
+            
+            let cornerRadiusAnimator = UIViewPropertyAnimator(duration: duration, curve: .linear) {
+                switch state {
+                case .expanded:
+                    self.cardViewController.view.layer.cornerRadius = 12
+                case .collapsed:
+                    self.cardViewController.view.layer.cornerRadius = 0
+                }
+            }
+            
+            cornerRadiusAnimator.startAnimation()
+            runningAnimations.append(cornerRadiusAnimator)
+            
+            let blurAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
+                switch state {
+                case .expanded:
+                    self.visualEffectView.effect = UIBlurEffect(style: .dark)
+                case .collapsed:
+                    self.visualEffectView.effect = nil
+                }
+            }
+            
+            blurAnimator.startAnimation()
+            runningAnimations.append(blurAnimator)
+        }
+    }
+    
+    func startInteractiveTransition(state: CardState, duration: TimeInterval) {
+        if runningAnimations.isEmpty {
+            animateTransitionIfNeeded(state: state, duration: duration)
+        }
+        
+        for animator in runningAnimations {
+            animator.pauseAnimation()
+            animationProgressWhenInterrupted = animator.fractionComplete
+        }
+    }
+    
+    func updateInteractiveTransition(fractionCompleted: CGFloat) {
+        for animator in runningAnimations {
+            animator.fractionComplete = fractionCompleted + animationProgressWhenInterrupted
+        }
+    }
+    
+    func continueInteractiveTransition() {
+        for animator in runningAnimations {
+            animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
+        }
+    }
+    
+}
+
+extension ViewController: CardViewControllerDelegate {
+    
+    func expandCard() {
+        if(!cardVisible) {
+            animateTransitionIfNeeded(state: nextState, duration: 0.9)
+        }
+    }
+    
+    func collapseCard() {
+        if(cardVisible) {
+            animateTransitionIfNeeded(state: nextState, duration: 0.9)
+        }
+    }
+    
+}
+
 extension ViewController: CLLocationManagerDelegate {
     /// Called after user grants or rejects location permission
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -162,7 +322,7 @@ extension ViewController: CLLocationManagerDelegate {
 
 extension ViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        self.searchBar.endEditing(true)
+        
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -174,12 +334,6 @@ extension ViewController: MKMapViewDelegate {
 }
 
 extension ViewController: UISearchBarDelegate {
-    
-    /// Called when user types into Search Bar
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-//        Update search results
-    }
     
     /// Called when user hits search button
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

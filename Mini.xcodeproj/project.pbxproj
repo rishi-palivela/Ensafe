@@ -20,6 +20,8 @@
 		72123AC3249A1C2000D023DE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72123AC2249A1C2000D023DE /* CoreLocation.framework */; };
 		724EF16F249B443A00F85217 /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724EF16E249B443A00F85217 /* RoundButton.swift */; };
 		724EF171249B660B00F85217 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724EF170249B660B00F85217 /* Extensions.swift */; };
+		72C5C869249FDF9D000BA690 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5C867249FDF9D000BA690 /* CardViewController.swift */; };
+		72C5C86A249FDF9D000BA690 /* CardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72C5C868249FDF9D000BA690 /* CardViewController.xib */; };
 		72DBF0D3249E129800E7776E /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72DBF0D2249E129800E7776E /* Route.swift */; };
 		72DBF0D5249E22AC00E7776E /* MedDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72DBF0D4249E22AC00E7776E /* MedDetails.swift */; };
 		88D5CDEB19CD031E5C208F91 /* Pods_Mini.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1EFE5B523A56536FFC5A2F82 /* Pods_Mini.framework */; };
@@ -43,6 +45,8 @@
 		72123AC2249A1C2000D023DE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		724EF16E249B443A00F85217 /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		724EF170249B660B00F85217 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		72C5C867249FDF9D000BA690 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
+		72C5C868249FDF9D000BA690 /* CardViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardViewController.xib; sourceTree = "<group>"; };
 		72DBF0D2249E129800E7776E /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		72DBF0D4249E22AC00E7776E /* MedDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedDetails.swift; sourceTree = "<group>"; };
 		A2D390016BFF4C77E33A1668 /* Pods-Mini.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mini.debug.xcconfig"; path = "Target Support Files/Pods-Mini/Pods-Mini.debug.xcconfig"; sourceTree = "<group>"; };
@@ -130,6 +134,7 @@
 			children = (
 				5BDE849A24990ECE00220776 /* ViewController.swift */,
 				5BDE84AA249943B600220776 /* ProfileViewController.swift */,
+				72C5C867249FDF9D000BA690 /* CardViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -147,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				724EF16E249B443A00F85217 /* RoundButton.swift */,
+				72C5C868249FDF9D000BA690 /* CardViewController.xib */,
 			);
 			path = "Custom Views";
 			sourceTree = "<group>";
@@ -224,6 +230,7 @@
 				5BDE84A324990ED100220776 /* LaunchScreen.storyboard in Resources */,
 				72123ABF249A173700D023DE /* GoogleService-Info.plist in Resources */,
 				5BDE84A024990ED100220776 /* Assets.xcassets in Resources */,
+				72C5C86A249FDF9D000BA690 /* CardViewController.xib in Resources */,
 				5BDE849E24990ECE00220776 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,6 +309,7 @@
 				72DBF0D3249E129800E7776E /* Route.swift in Sources */,
 				72DBF0D5249E22AC00E7776E /* MedDetails.swift in Sources */,
 				5BDE849924990ECE00220776 /* SceneDelegate.swift in Sources */,
+				72C5C869249FDF9D000BA690 /* CardViewController.swift in Sources */,
 				5BDB96D0249D4EE0003F5D0F /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

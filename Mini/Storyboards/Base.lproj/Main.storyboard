@@ -19,14 +19,6 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="hybrid" pitchEnabled="NO" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZxC-DE-0Cg">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             </mapView>
-                            <searchBar contentMode="redraw" misplaced="YES" searchBarStyle="minimal" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="vY0-lF-Utb">
-                                <rect key="frame" x="0.0" y="51" width="414" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <scopeButtonTitles>
-                                    <string>Title</string>
-                                    <string>Title</string>
-                                </scopeButtonTitles>
-                            </searchBar>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6dt-Ic-9Xd" customClass="RoundButton" customModule="Ensafe" customModuleProvider="target">
                                 <rect key="frame" x="8" y="661" width="64" height="64"/>
                                 <color key="backgroundColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -83,12 +75,9 @@
                             <constraint firstItem="ZxC-DE-0Cg" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="57a-Qk-G27"/>
                             <constraint firstItem="ZxC-DE-0Cg" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="5jy-Kx-Rpb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="AhG-QJ-K7t" secondAttribute="bottom" constant="16" id="Fax-6s-3g3"/>
-                            <constraint firstItem="vY0-lF-Utb" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="Hz3-b0-KDa"/>
                             <constraint firstItem="6dt-Ic-9Xd" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="J0R-89-puX"/>
                             <constraint firstAttribute="trailing" secondItem="ZxC-DE-0Cg" secondAttribute="trailing" id="NTj-EV-I8E"/>
-                            <constraint firstItem="vY0-lF-Utb" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="P2O-Kr-MmF"/>
                             <constraint firstItem="jJB-bj-Wme" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="TrF-RI-s8S"/>
-                            <constraint firstItem="vY0-lF-Utb" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="UFT-WM-f8M"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="jJB-bj-Wme" secondAttribute="bottom" constant="16" id="Wmq-Z5-4oc"/>
                             <constraint firstAttribute="bottom" secondItem="ZxC-DE-0Cg" secondAttribute="bottom" id="aXN-uL-pSG"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="b9p-8W-KHp" secondAttribute="trailing" constant="8" id="rBH-dn-83b"/>
@@ -103,7 +92,6 @@
                         <outlet property="alignNorthButton" destination="jJB-bj-Wme" id="1BD-um-HYt"/>
                         <outlet property="emergencyButton" destination="6dt-Ic-9Xd" id="fnl-zH-Gjj"/>
                         <outlet property="mapView" destination="ZxC-DE-0Cg" id="OGh-qv-HTr"/>
-                        <outlet property="searchBar" destination="vY0-lF-Utb" id="Tnz-5s-rw3"/>
                         <outlet property="shareLocationButton" destination="b9p-8W-KHp" id="0dc-vX-OiC"/>
                         <outlet property="zoomToUserLocationButton" destination="AhG-QJ-K7t" id="S4Y-RL-BuU"/>
                     </connections>
