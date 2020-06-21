@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     }
     
     var locationManager: CLLocationManager?
+    var directions: MKDirections?
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var zoomToUserLocationButton: UIButton!
@@ -171,6 +172,7 @@ extension ViewController {
     func setupCard() {
         visualEffectView = UIVisualEffectView()
         visualEffectView.frame = self.view.frame
+        visualEffectView.isUserInteractionEnabled = false
         self.view.addSubview(visualEffectView)
         
         cardViewController = CardViewController(nibName: "CardViewController", bundle: nil)
@@ -190,6 +192,8 @@ extension ViewController {
     @objc func handleCardTap(recognzier: UITapGestureRecognizer) {
         if(cardVisible) {
             cardViewController.prepareToCollapse()
+        } else {
+            cardViewController.prepareToExpand()
         }
         
         switch recognzier.state {
@@ -203,6 +207,8 @@ extension ViewController {
     @objc func handleCardPan(recognzier: UIPanGestureRecognizer) {
         if(cardVisible) {
             cardViewController.prepareToCollapse()
+        } else {
+            cardViewController.prepareToExpand()
         }
         
         switch recognzier.state {
@@ -307,6 +313,73 @@ extension ViewController: CardViewControllerDelegate {
         }
     }
     
+    func show(placemark: MKPlacemark) {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.addAnnotation(placemark)
+        
+        mapView.setRegion(MKCoordinateRegion(center: placemark.coordinate,
+                                             latitudinalMeters: 500, longitudinalMeters: 500), animated: true)
+    }
+    
+    func getTime(to destination: MKMapItem,
+                withCompletion completionHandler: @escaping ((_ time: TimeInterval, _ distance: CLLocationDistance) -> Void)) {
+        directions?.cancel()
+        
+        let directionsRequest = MKDirections.Request()
+        directionsRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapView.userLocation.coordinate))
+        directionsRequest.destination =  destination
+        directionsRequest.requestsAlternateRoutes = false
+        directionsRequest.transportType = .automobile
+        
+        directions = MKDirections(request: directionsRequest)
+        directions?.calculateETA { response, error in
+            guard let response = response else {
+                print(error?.localizedDescription ?? "Unknown Error")
+                return
+            }
+            
+            completionHandler(response.expectedTravelTime, response.distance)
+        }
+        
+    }
+    
+    func navigate(to destination: MKMapItem) {
+        directions?.cancel()
+
+        let directionsRequest = MKDirections.Request()
+        directionsRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapView.userLocation.coordinate))
+        directionsRequest.destination =  destination
+        directionsRequest.requestsAlternateRoutes = true
+        directionsRequest.transportType = .automobile
+        
+        directions = MKDirections(request: directionsRequest)
+        directions?.calculate { response, error in
+            guard let routes = response?.routes else {
+                print(error?.localizedDescription ?? "Unknown Error")
+                return
+            }
+            
+            for i in stride(from: routes.count-1, to: -1, by: -1) {
+                let route = routes[i]
+                let polyline = route.polyline
+                polyline.subtitle = ((i == 0) ? Route.Preference.first :
+                    (i == 1) ? Route.Preference.second : Route.Preference.last).rawValue
+                
+                if i == 0 {
+                    let formatter = DateComponentsFormatter()
+                    formatter.allowedUnits = [.day, .hour, .minute, .second]
+                    formatter.unitsStyle = .short
+                    let str = formatter.string(from: route.expectedTravelTime)!
+                    print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) >\(str)")
+                }
+                
+                    
+                self.mapView.addOverlay(polyline)
+                self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
+            }
+        }
+    }
+    
 }
 
 extension ViewController: CLLocationManagerDelegate {
@@ -321,72 +394,12 @@ extension ViewController: CLLocationManagerDelegate {
 }
 
 extension ViewController: MKMapViewDelegate {
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        
-    }
-    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let polyline = overlay as! MKPolyline
         let renderer = MKPolylineRenderer(polyline: polyline)
         renderer.strokeColor = Route.preferenceColors[Route.Preference(rawValue: polyline.subtitle ?? Route.Preference.last.rawValue)!]
         return renderer
     }
-}
-
-extension ViewController: UISearchBarDelegate {
-    
-    /// Called when user hits search button
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-        
-        let searchRequest = MKLocalSearch.Request()
-        searchRequest.naturalLanguageQuery = searchBar.text
-        
-        let search = MKLocalSearch(request: searchRequest)
-        search.start { response, error in
-            guard let response = response else {
-                print(error?.localizedDescription ?? "Unknown Error")
-//                TODO: show error message to user
-                return
-            }
-            
-            print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) . \(response.mapItems.count)")
-            let destination = response.mapItems[0]
-            
-            let directionsRequest = MKDirections.Request()
-            directionsRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapView.userLocation.coordinate))
-            directionsRequest.destination = destination
-            directionsRequest.requestsAlternateRoutes = true
-            directionsRequest.transportType = .automobile
-            
-            self.mapView.removeOverlays(self.mapView.overlays)
-            
-            let directions = MKDirections(request: directionsRequest)
-            directions.calculate { [unowned self] response, error in
-                guard let routes = response?.routes else { return }
-
-                for i in stride(from: routes.count-1, to: -1, by: -1) {
-                    let route = routes[i]
-                    let polyline = route.polyline
-                    polyline.subtitle = ((i == 0) ? Route.Preference.first :
-                        (i == 1) ? Route.Preference.second : Route.Preference.last).rawValue
-                    
-                    if i == 0 {
-                        let formatter = DateComponentsFormatter()
-                        formatter.allowedUnits = [.day, .hour, .minute, .second]
-                        formatter.unitsStyle = .short
-                        let str = formatter.string(from: route.expectedTravelTime)!
-                        print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) >\(str)")
-                    }
-                    
-                        
-                    self.mapView.addOverlay(polyline)
-                    self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
-                }
-            }
-        }
-    }
-    
 }
 
 extension UISearchBar {

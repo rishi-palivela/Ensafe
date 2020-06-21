@@ -10,8 +10,13 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CardViewController" customModule="Ensafe" customModuleProvider="target">
             <connections>
+                <outlet property="cancelDirections" destination="YDr-8I-umD" id="xW1-cB-Max"/>
+                <outlet property="directionButtonView" destination="FvE-Nu-7th" id="ErA-J8-QVN"/>
+                <outlet property="directionButtonViewHeight" destination="Y9H-UX-2bx" id="aFx-PW-gj4"/>
+                <outlet property="getDirections" destination="nnF-FA-jZC" id="cpw-6Y-gGf"/>
                 <outlet property="handleArea" destination="mJu-F5-Ryw" id="7Tg-ye-q1M"/>
                 <outlet property="searchBar" destination="1C7-QT-WSS" id="VoR-7a-CKc"/>
+                <outlet property="searchBarHeight" destination="m6L-36-Rzj" id="iob-55-kua"/>
                 <outlet property="tableView" destination="Ioe-oq-XS8" id="RLv-8Y-jHe"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
                 <outlet property="visualEffectView" destination="Ce9-9c-Q7c" id="gbq-Ze-7cN"/>
@@ -32,26 +37,59 @@
                         <constraint firstAttribute="height" constant="20" id="pFo-d4-apV"/>
                     </constraints>
                 </view>
-                <searchBar contentMode="redraw" searchBarStyle="minimal" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1C7-QT-WSS">
+                <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search for a place or address" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1C7-QT-WSS">
                     <rect key="frame" x="0.0" y="64" width="414" height="56"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="56" id="m6L-36-Rzj"/>
+                    </constraints>
                     <textInputTraits key="textInputTraits"/>
                 </searchBar>
+                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="FvE-Nu-7th">
+                    <rect key="frame" x="16" y="120" width="382" height="72"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nnF-FA-jZC">
+                            <rect key="frame" x="0.0" y="19.5" width="342" height="33"/>
+                            <color key="backgroundColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                            <state key="normal" title="Get Directions">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="getDirectionTapped:" destination="-1" eventType="touchUpInside" id="lk6-yV-zmX"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YDr-8I-umD">
+                            <rect key="frame" x="358" y="24" width="24" height="24"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="YDr-8I-umD" secondAttribute="height" multiplier="1:1" id="6jc-1x-X23"/>
+                            </constraints>
+                            <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <state key="normal" image="xmark_circle_fill"/>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="72" id="Y9H-UX-2bx"/>
+                    </constraints>
+                </stackView>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Ioe-oq-XS8">
-                    <rect key="frame" x="0.0" y="120" width="414" height="742"/>
+                    <rect key="frame" x="0.0" y="192" width="414" height="670"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </tableView>
             </subviews>
             <constraints>
                 <constraint firstItem="mJu-F5-Ryw" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="0hv-OF-e8q"/>
-                <constraint firstItem="Ioe-oq-XS8" firstAttribute="top" secondItem="1C7-QT-WSS" secondAttribute="bottom" id="B7x-9J-z92"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="FvE-Nu-7th" secondAttribute="trailing" constant="16" id="3jv-bh-B9Z"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Ioe-oq-XS8" secondAttribute="trailing" id="CC0-ku-kN9"/>
+                <constraint firstItem="FvE-Nu-7th" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="CIH-rS-5mu"/>
                 <constraint firstItem="Ce9-9c-Q7c" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="VjE-2Q-Yxx"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Ioe-oq-XS8" secondAttribute="bottom" id="VpR-OU-mF3"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="mJu-F5-Ryw" secondAttribute="trailing" id="WAg-R8-cNd"/>
                 <constraint firstItem="1C7-QT-WSS" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="YHD-E7-T77"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Ce9-9c-Q7c" secondAttribute="trailing" id="YKl-yN-5sn"/>
+                <constraint firstItem="FvE-Nu-7th" firstAttribute="top" secondItem="1C7-QT-WSS" secondAttribute="bottom" id="dPk-G9-tkW"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Ce9-9c-Q7c" secondAttribute="bottom" id="dw4-Ch-1Xw"/>
                 <constraint firstItem="Ioe-oq-XS8" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="eAn-eI-LGW"/>
+                <constraint firstItem="FvE-Nu-7th" firstAttribute="bottom" secondItem="Ioe-oq-XS8" secondAttribute="top" id="oL5-7Z-MWL"/>
                 <constraint firstItem="1C7-QT-WSS" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="sfz-xi-Ro7"/>
                 <constraint firstItem="1C7-QT-WSS" firstAttribute="top" secondItem="mJu-F5-Ryw" secondAttribute="bottom" id="yUF-I5-g29"/>
                 <constraint firstItem="Ce9-9c-Q7c" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="ylC-iB-iv3"/>
@@ -73,5 +111,14 @@
             </viewControllers>
             <point key="canvasLocation" x="1002" y="132"/>
         </navigationController>
+        <stackView opaque="NO" contentMode="scaleToFill" id="el6-Of-blE">
+            <rect key="frame" x="0.0" y="0.0" width="200" height="110"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <viewLayoutGuide key="safeArea" id="p0z-GK-Cir"/>
+            <point key="canvasLocation" x="-371" y="-25"/>
+        </stackView>
     </objects>
+    <resources>
+        <image name="xmark_circle_fill" width="24" height="24"/>
+    </resources>
 </document>
