@@ -36,8 +36,17 @@ class ViewController: UIViewController {
     var cardHeight: CGFloat {
         view.frame.height * 0.9
     }
-    let cardHandleAreaHeight: CGFloat = 180
-    var cardVisible = false
+    var cardHandleAreaHeight: CGFloat {
+        cardViewController.cardHandleAreaHeight
+    }
+    var cardVisible: Bool {
+        get {
+            cardViewController.cardVisible
+        }
+        set {
+            cardViewController.cardVisible = newValue
+        }
+    }
     var nextState: CardState {
         cardVisible ? .collapsed : .expanded
     }
@@ -343,7 +352,7 @@ extension ViewController: CardViewControllerDelegate {
         
     }
     
-    func navigate(to destination: MKMapItem) {
+    func navigate(to destination: MKMapItem, withCompletion completionHandler: @escaping ((_ routes: [MKRoute]) -> Void)) {
         directions?.cancel()
 
         let directionsRequest = MKDirections.Request()
@@ -376,6 +385,8 @@ extension ViewController: CardViewControllerDelegate {
                     
                 self.mapView.addOverlay(polyline)
                 self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
+                
+                completionHandler(routes)
             }
         }
     }
