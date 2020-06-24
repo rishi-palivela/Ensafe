@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import UserNotifications
 import CoreLocation
 import FirebaseUI
 
@@ -19,6 +20,7 @@ class ViewController: UIViewController {
     }
     
     var locationManager: CLLocationManager?
+    var notificationCenter: UNUserNotificationCenter?
     var directions: MKDirections?
     
     @IBOutlet weak var mapView: MKMapView!
@@ -59,7 +61,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         setupCard()
-        
+        setupNotifications()
         startLocation()
         
         mapView.delegate = self
@@ -115,6 +117,18 @@ class ViewController: UIViewController {
         }
     }
     
+    func setupNotifications() {
+        notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter?.delegate = self
+        let options: UNAuthorizationOptions = [.alert, .sound, .badge]
+        notificationCenter!.requestAuthorization(options: options) {
+            (didAllow, error) in
+            if !didAllow {
+                print("User has declined notifications")
+            }
+        }
+    }
+    
     /// Function to check for Location Permissions. If permission is granted, starts user location monitoring, else asks for permission
     fileprivate func startLocation() {
         locationManager = CLLocationManager()
@@ -142,7 +156,7 @@ class ViewController: UIViewController {
 //        TODO: Implement Location sharing update
     }
     
-    @IBAction func alignNothTapped(_ sender: Any) {
+    @IBAction func alignNorthTapped(_ sender: Any) {
         let camera = mapView.camera.copy() as! MKMapCamera
         camera.heading = 0
         mapView.setCamera(camera, animated: true)
@@ -150,6 +164,23 @@ class ViewController: UIViewController {
     
     @IBAction func emergencyTapped(_ sender: Any) {
 //        TODO: Implement Emergency Feature
+        guard let notificationCenter = notificationCenter else { return }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Emergency"
+        content.body = "Near CVR College of Engineering.\nSeverity Level: 5"
+        content.sound = .default
+        content.badge = 1
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let identifier = "Emergency Notifications"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        notificationCenter.add(request) { (error) in
+            if let error = error {
+                print("Error \(error.localizedDescription)")
+            }
+        }
     }
     
     func getNavigation(from source: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
@@ -174,6 +205,13 @@ class ViewController: UIViewController {
         }
     }
     
+}
+
+extension ViewController: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
+    {
+        completionHandler([.alert, .badge, .sound])
+    }
 }
 
 extension ViewController {
