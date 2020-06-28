@@ -11,6 +11,7 @@ import MapKit
 import UserNotifications
 import CoreLocation
 import FirebaseUI
+import Firebase
 
 class ViewController: UIViewController {
     
@@ -30,8 +31,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var emergencyButton: RoundButton!
     
     var user: User?
+    var ensafeUser: EnsafeUser?
     var authUI: FUIAuth!
     var authStateHandle: AuthStateDidChangeListenerHandle?
+    var userRef: DocumentReference?
+    var locRef: CollectionReference?
+    var locationUpdateTimer: Timer?
     
     var cardViewController: CardViewController!
     var visualEffectView: UIVisualEffectView!
@@ -72,10 +77,10 @@ class ViewController: UIViewController {
         alignNorthButton.backgroundColor = .mapButtonBackground
         
         authUI = (UIApplication.shared.delegate as! AppDelegate).authUI
-        addAuthObserver()
-        NotificationCenter.default.addObserver(self, selector: #selector(addAuthObserver),
+        appWillEnterForeground()
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground),
                                                name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(removeAuthObserver),
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground),
                                                name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
@@ -90,30 +95,112 @@ class ViewController: UIViewController {
         super.viewDidDisappear(animated)
         
         locationManager?.delegate = self
-        locationManager?.stopUpdatingLocation()
     }
     
-    @objc func addAuthObserver() {
+    @objc func appWillEnterForeground() {
         guard authStateHandle == nil else { return }
         print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function)")
         
         authStateHandle = authUI.auth?.addStateDidChangeListener { [unowned self] (auth, user) in
             if let user = user {
                 self.user = user
+                self.userRef = (UIApplication.shared.delegate as! AppDelegate).firestore.collection("users").document(user.uid)
+                self.locRef = self.userRef!.collection("location")
+                self.locationUpdateTimer = Timer.scheduledTimer(timeInterval: 30, target: self,
+                                                                selector: #selector(self.updateUserLocation), userInfo: nil, repeats: true)
+                
+//                TODO: Check user and add observer if not citizen
+                
+                self.userRef?.getDocument { snapshot, error in
+                    guard let snapshot = snapshot else {
+                        return
+                    }
+                    
+                    if let data = try? JSONSerialization.data(withJSONObject: snapshot.data()),
+                        let user = try? JSONDecoder().decode(EnsafeUser.self, from: data) {
+                        self.ensafeUser = user
+                        self.ensafeUser?.id = self.user?.uid
+                    } else {
+                        print("Cannot read user info")
+                    }
+                    
+                    print(self.ensafeUser)
+                    
+                    if self.ensafeUser!.kind != .citizen {
+                        self.addEmergencyObservers()
+                    }
+                }
+                
             } else {
+                self.ensafeUser = nil
                 self.user = nil
                 self.present(self.authUI.authViewController(), animated: true)
+                
+                self.userRef = nil
+                self.locRef = nil
+                self.locationUpdateTimer?.invalidate()
             }
             
         }
     }
     
-    @objc func removeAuthObserver() {
+    @objc func appDidEnterBackground() {
         if let _ = authStateHandle {
             print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function)")
             
+            self.locationUpdateTimer?.invalidate()
+//            removeEmergencyObservers()
+            
             authUI.auth?.removeStateDidChangeListener(authStateHandle!)
             authStateHandle = nil
+        }
+        
+        locationManager?.stopUpdatingLocation()
+    }
+    
+    func addEmergencyObservers() {
+        print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function)")
+        let emergencyRef = (UIApplication.shared.delegate as! AppDelegate).firestore.collection("emergency")
+        emergencyRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot,
+                let doc = snapshot.documents.first,
+                let data = try? JSONSerialization.data(withJSONObject: doc.data()),
+                let emergency = try? JSONDecoder().decode(Emergency.self, from: data) else {
+                print(error?.localizedDescription ?? "Unknown Error")
+                return
+            }
+            
+            let userid = emergency.uid
+                
+            let userLocRef = (UIApplication.shared.delegate as! AppDelegate).firestore
+                    .collection("users").document(userid).collection("location")
+                
+            userLocRef.order(by: "time", descending: true).limit(to: 1).getDocuments { snapshot, error in
+                guard let snapshot = snapshot,
+                    let doc = snapshot.documents.first,
+                    let data = try? JSONSerialization.data(withJSONObject: doc.data()),
+                    let location = try? JSONDecoder().decode(Location.self, from: data),
+                    let notificationCenter = self.notificationCenter else {
+                    print(error?.localizedDescription ?? "Unknown Error")
+                    return
+                }
+                    
+                let content = UNMutableNotificationContent()
+                content.title = "Emergency"
+                content.body = "A new emergency is reported"
+                content.sound = .default
+                content.badge = 1
+                    
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                let identifier = "Emergency Notification"
+                let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+                notificationCenter.add(request) { (error) in
+                    if let error = error {
+                        print("Error \(error.localizedDescription)")
+                    }
+                }
+            }
         }
     }
     
@@ -164,44 +251,36 @@ class ViewController: UIViewController {
     
     @IBAction func emergencyTapped(_ sender: Any) {
 //        TODO: Implement Emergency Feature
-        guard let notificationCenter = notificationCenter else { return }
         
-        let content = UNMutableNotificationContent()
-        content.title = "Emergency"
-        content.body = "Near CVR College of Engineering.\nSeverity Level: 5"
-        content.sound = .default
-        content.badge = 1
+        let emergencyDoc = (UIApplication.shared.delegate as! AppDelegate).firestore.collection("emergency").document()
+        let emergency = Emergency(uid: user!.uid)
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-        let identifier = "Emergency Notifications"
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-        notificationCenter.add(request) { (error) in
+        guard let data = try? JSONEncoder().encode(emergency),
+            let dataDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+        //                Show User Error
+            print("An error occurred while saving")
+            return
+        }
+        
+        emergencyDoc.setData(dataDict) { error in
             if let error = error {
-                print("Error \(error.localizedDescription)")
+                print(error.localizedDescription)
+                return
             }
         }
     }
     
-    func getNavigation(from source: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
-//        CLLocationCoordinate2D(latitude:17.1964133, longitude:78.5972509)
-//        CLLocationCoordinate2D(latitude: 17.40115915, longitude:78.5588766)
-        
-        let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: source, addressDictionary: nil))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination, addressDictionary: nil))
-        request.requestsAlternateRoutes = true
-        request.transportType = .automobile
-
-        let directions = MKDirections(request: request)
-
-        directions.calculate { [unowned self] response, error in
-            guard let unwrappedResponse = response else { return }
-
-            for _ in unwrappedResponse.routes {
-//                self.mapView.addOverlay(route.polyline)
-//                self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
+    @objc func updateUserLocation() {
+        guard let userLocation = locationManager?.location else { return }
+        let location = Location(from: userLocation)
+        Location.store(location: location, in: locRef) { error in
+            if error != nil {
+//                TODO: Show user error
+                print(error!.localizedDescription)
+                return
             }
+            
+            
         }
     }
     
@@ -439,6 +518,10 @@ extension ViewController: CLLocationManagerDelegate {
         } else {
 //            TODO: Add prompt to show user how to give location permissions later
         }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
     }
 }
 

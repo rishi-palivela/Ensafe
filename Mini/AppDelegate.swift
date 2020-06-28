@@ -14,6 +14,7 @@ import FirebaseUI
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var authUI: FUIAuth!
+    var firestore: Firestore!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
@@ -21,6 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         authUI = FUIAuth.defaultAuthUI()
         authUI.providers = [FUIEmailAuth(),
                                  FUIGoogleAuth()]
+        
+        firestore = Firestore.firestore()
+        let settings = FirestoreSettings()
+        settings.isPersistenceEnabled = true
+        firestore.settings = settings
         
         return true
     }

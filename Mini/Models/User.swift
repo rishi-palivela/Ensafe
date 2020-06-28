@@ -11,15 +11,15 @@ import Foundation
 struct EnsafeUser: Codable {
     
     enum Gender: Int {
-        case male
-        case female
-        case other
+        case male = 0
+        case female = 1
+        case other = 2
         case notDetermined = -1
     }
     
     enum Kind: Int {
-        case citizen
-        case police
+        case citizen = 0
+        case police = 1
         case ambulance
         case firestation
         case other

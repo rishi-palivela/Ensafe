@@ -18,8 +18,10 @@
 		72123ABF249A173700D023DE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 72123ABE249A173600D023DE /* GoogleService-Info.plist */; };
 		72123AC1249A1C0200D023DE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72123AC0249A1C0200D023DE /* MapKit.framework */; };
 		72123AC3249A1C2000D023DE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72123AC2249A1C2000D023DE /* CoreLocation.framework */; };
+		721E6C1724A66154008B71A3 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721E6C1624A66154008B71A3 /* Location.swift */; };
 		724EF16F249B443A00F85217 /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724EF16E249B443A00F85217 /* RoundButton.swift */; };
 		724EF171249B660B00F85217 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724EF170249B660B00F85217 /* Extensions.swift */; };
+		725D1B4224A86B8A0016D8B4 /* Emergency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725D1B4124A86B8A0016D8B4 /* Emergency.swift */; };
 		72C5C869249FDF9D000BA690 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5C867249FDF9D000BA690 /* CardViewController.swift */; };
 		72C5C86A249FDF9D000BA690 /* CardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72C5C868249FDF9D000BA690 /* CardViewController.xib */; };
 		72DBF0D3249E129800E7776E /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72DBF0D2249E129800E7776E /* Route.swift */; };
@@ -43,8 +45,10 @@
 		72123ABE249A173600D023DE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		72123AC0249A1C0200D023DE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		72123AC2249A1C2000D023DE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		721E6C1624A66154008B71A3 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		724EF16E249B443A00F85217 /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		724EF170249B660B00F85217 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		725D1B4124A86B8A0016D8B4 /* Emergency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emergency.swift; sourceTree = "<group>"; };
 		72C5C867249FDF9D000BA690 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		72C5C868249FDF9D000BA690 /* CardViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardViewController.xib; sourceTree = "<group>"; };
 		72DBF0D2249E129800E7776E /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -82,6 +86,8 @@
 				5BDB96CF249D4EE0003F5D0F /* User.swift */,
 				72DBF0D2249E129800E7776E /* Route.swift */,
 				72DBF0D4249E22AC00E7776E /* MedDetails.swift */,
+				721E6C1624A66154008B71A3 /* Location.swift */,
+				725D1B4124A86B8A0016D8B4 /* Emergency.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -302,6 +308,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5BDE849B24990ECE00220776 /* ViewController.swift in Sources */,
+				725D1B4224A86B8A0016D8B4 /* Emergency.swift in Sources */,
+				721E6C1724A66154008B71A3 /* Location.swift in Sources */,
 				724EF171249B660B00F85217 /* Extensions.swift in Sources */,
 				724EF16F249B443A00F85217 /* RoundButton.swift in Sources */,
 				5BDE849724990ECE00220776 /* AppDelegate.swift in Sources */,
