@@ -105,17 +105,20 @@ class ViewController: UIViewController {
             if let user = user {
                 self.user = user
                 self.userRef = (UIApplication.shared.delegate as! AppDelegate).firestore.collection("users").document(user.uid)
+                print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) > 0")
                 self.locRef = self.userRef!.collection("location")
                 self.locationUpdateTimer = Timer.scheduledTimer(timeInterval: 30, target: self,
                                                                 selector: #selector(self.updateUserLocation), userInfo: nil, repeats: true)
                 
 //                TODO: Check user and add observer if not citizen
-                
+                print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) > 1 \(user.uid)")
                 self.userRef?.getDocument { snapshot, error in
-                    guard let snapshot = snapshot else {
+                    guard let snapshot = snapshot, snapshot.exists else {
                         return
                     }
-                    
+
+                    print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function) > 2")
+
                     if let data = try? JSONSerialization.data(withJSONObject: snapshot.data()),
                         let user = try? JSONDecoder().decode(EnsafeUser.self, from: data) {
                         self.ensafeUser = user
@@ -123,9 +126,9 @@ class ViewController: UIViewController {
                     } else {
                         print("Cannot read user info")
                     }
-                    
+
                     print(self.ensafeUser)
-                    
+
                     if self.ensafeUser!.kind != .citizen {
                         self.addEmergencyObservers()
                     }

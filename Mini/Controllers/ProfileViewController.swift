@@ -76,6 +76,7 @@ class ProfileViewController: UITableViewController {
         print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function)")
         
         authStateHandle = authUI.auth?.addStateDidChangeListener { [unowned self] (auth, user) in
+            print("\(Date()) \(URL(fileURLWithPath: #file).deletingPathExtension().lastPathComponent).\(#function)")
             self.user = user
             self.reloadView()
             
